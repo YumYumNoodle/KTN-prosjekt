@@ -12,6 +12,10 @@ class Client:
         """
         This method is run when creating a new Client object
         """
+        self.host = host
+        self.server_port = server_port
+        self.BUFFER_SIZE = 1024
+        self.MESSAGE = "Hello, World 2.0!"
 
         # Set up the socket connection to the server
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -20,8 +24,16 @@ class Client:
         self.run()
 
     def run(self):
+        print "running"
         # Initiate the connection to the server
         self.connection.connect((self.host, self.server_port))
+        print 1
+        self.connection.send(self.MESSAGE)
+        print 2
+        self.data = self.connection.recv(self.BUFFER_SIZE)
+        print 3
+        self.connection.close()
+        print "received data:", self.data
         
     def disconnect(self):
         # TODO: Handle disconnection
