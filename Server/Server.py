@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-import socketserver
-
+import SocketServer
+import json
 """
 Variables and functions that must be used by all the ClientHandler objects
 must be written here (e.g. a dictionary for connected clients)
 """
 
-class ClientHandler(socketserver.BaseRequestHandler):
+class ClientHandler(SocketServer.BaseRequestHandler):
     """
     This is the ClientHandler class. Everytime a new client connects to the
     server, a new ClientHandler object will be created. This class represents
@@ -22,15 +22,25 @@ class ClientHandler(socketserver.BaseRequestHandler):
         self.port = self.client_address[1]
         self.connection = self.request
 
-        print('Client connected')
+        print('Client connected at ' + str(self.ip) + ':' + str(self.port))
+
+
+        # Sends a response that the client is connected (only for test)
+
+        self.connection.send("Successfully established a connection to the server.".encode())
+
         # Loop that listens for messages from the client
         while True:
             received_string = self.connection.recv(4096)
-            
+            if(received_string):
+                print received_string
+            else:
+                print 'Client disconnected at ' + str(self.ip) + ':' + str(self.port)
+                break
             # TODO: Add handling of received payload from client
 
 
-class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     """
     This class is present so that each client connected will be ran as a own
     thread. In that way, all clients will be served by the server.
@@ -56,7 +66,7 @@ if __name__ == "__main__":
 
     # Set up and initiate the TCP server
 
-    print("Serving forever at port", PORT)
+    print "Serving forever at port "+str(PORT)
     try:
         server.serve_forever()
     except:

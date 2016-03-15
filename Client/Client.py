@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import socket
+import time
+import json
 from MessageReceiver import MessageReceiver
 from MessageParser import MessageParser
+from threading import Thread
 
 class Client:
     """
@@ -22,21 +25,34 @@ class Client:
 
     def run(self):
         # Initiate the connection to the server
+        print 'Connction to the server..'
         self.connection.connect((self.host, self.server_port))
+
+        # Initialize a message reciver
+        reciver = MessageReceiver(self, self.connection)
+        reciver.start()
+
+        # Wait a second for server response
+        time.sleep(1)
+        cin = str(raw_input())
+
+        while cin != "exit":
+            temp_dict = cin.partition(' ')
+            payload = {"request": temp_dict[0], "content": temp_dict[2]}
+            self.send_payload(json.dumps(payload))
+            cin = str(raw_input())
+
         self.disconnect()
 
     def disconnect(self):
         # TODO: Handle disconnection
-
         self.connection.close()
 
     def receive_message(self, message):
-        # TODO: Handle incoming message
-        pass
+        print message
 
     def send_payload(self, data):
-        # TODO: Handle sending of a payload
-        pass
+        self.connection.send(data)
         
     # More methods may be needed!
 
