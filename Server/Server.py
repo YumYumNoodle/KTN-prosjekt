@@ -1,15 +1,33 @@
 # -*- coding: utf-8 -*-
-<<<<<<< HEAD
-import SocketServer
-import socket
-=======
 import socketserver
-
->>>>>>> master
+import socket
 """
 Variables and functions that must be used by all the ClientHandler objects
 must be written here (e.g. a dictionary for connected clients)
 """
+
+host = 'localhost'
+port = 9998
+connected_users = {}
+history = []
+
+def main(): 
+    print("")
+    
+def broadcast_to_all(message): 
+    print("")
+
+def add_user(username, client_handler):
+    connected_users[username] = client_handler
+
+def remove_user(username):
+    if(username in connected_users):
+        del connected_users[username]
+    
+
+
+
+
 
 class ClientHandler(socketserver.BaseRequestHandler):
     """
@@ -27,12 +45,11 @@ class ClientHandler(socketserver.BaseRequestHandler):
         self.port = self.client_address[1]
         self.connection = self.request
 
-        print('Client connected')
         # Loop that listens for messages from the client
         while True:
             received_string = self.connection.recv(4096)
             if not received_string: break
-            print "received string", received_string
+            print("received string", received_string)
             self.connection.send(received_string)
         self.connection.close()
             
@@ -48,6 +65,15 @@ class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     """
     allow_reuse_address = True
 
+
+
+
+    
+
+
+
+
+
 if __name__ == "__main__":
     """
     This is the main method and is executed when you type "python Server.py"
@@ -55,20 +81,12 @@ if __name__ == "__main__":
 
     No alterations are necessary
     """
-
     HOST, PORT = 'localhost', 9998
-
-    # Allow restart of the server
-    ThreadedTCPServer.allow_reuse_address = True
-
-    server = ThreadedTCPServer((HOST, PORT), ClientHandler)
+    print('Server running...')
 
     # Set up and initiate the TCP server
+    server = ThreadedTCPServer((HOST, PORT), ClientHandler)
+    server.serve_forever()
 
-    print("Serving forever at port", PORT)
-    try:
-        server.serve_forever()
-    except:
-        print("Closing the server.")
-        server.server_close()
-        raise
+
+

@@ -26,7 +26,6 @@ class Client:
         self.connection.connect((self.host, self.server_port))
         self.disconnect()
 
->>>>>>> master
     def disconnect(self):
         # TODO: Handle disconnection
 
