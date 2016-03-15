@@ -20,12 +20,11 @@ class Client:
         # Set up the socket connection to the server
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
-        # TODO: Finish init process with necessary code
         self.run()
 
     def run(self):
         # Initiate the connection to the server
-        print 'Connction to the server..'
+        print 'Connecting to the server..'
         self.connection.connect((self.host, self.server_port))
 
         # Initialize a message reciver
@@ -45,11 +44,12 @@ class Client:
         self.disconnect()
 
     def disconnect(self):
-        # TODO: Handle disconnection
         self.connection.close()
 
-    def receive_message(self, message):
-        print message
+    def receive_message(self, payload):
+        # TODO: The code under is purely testing, and should be done in the message-parser class
+        message = json.loads(payload)
+        print("[" + message["sender"] + " at " + message["timestamp"] + "] " + message["content"])
 
     def send_payload(self, data):
         self.connection.send(data)

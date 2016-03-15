@@ -1,6 +1,7 @@
 
 
 class MessageParser():
+    # TODO: Finish this class
     def __init__(self):
 
         self.possible_responses = {
