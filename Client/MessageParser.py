@@ -10,11 +10,16 @@ class MessageParser():
         }
 
     def parse(self, payload):
+<<<<<<< HEAD
         payload = None # decode the JSON object
+=======
+        # payload = # decode the JSON object
+>>>>>>> master
 
         if payload['response'] in self.possible_responses:
             return self.possible_responses[payload['response']](payload)
         else:
+<<<<<<< HEAD
             return None
             # Response not valid
 
@@ -24,4 +29,12 @@ class MessageParser():
     def parse_info(self, payload):
         return None
     
+=======
+            pass # Response not valid
+
+    def parse_error(self, payload):
+        pass
+    def parse_info(self, payload):
+        pass
+>>>>>>> master
     # Include more methods for handling the different responses... 
