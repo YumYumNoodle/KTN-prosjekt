@@ -5,6 +5,9 @@ import json
 Variables and functions that must be used by all the ClientHandler objects
 must be written here (e.g. a dictionary for connected clients)
 """
+connected_users = {}
+
+
 
 
 
@@ -15,6 +18,8 @@ class ClientHandler(SocketServer.BaseRequestHandler):
     only connected clients, and not the server itself. If you want to write
     logic for the server, you must write it outside this class
     """
+    def __init__(self):
+        self.is_logged_in = False
 
 
     def handle(self):
@@ -50,6 +55,21 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                 break
             # TODO: Add handling of received payload from client
 
+    def login(self, username):
+        if self.is_logged_in == True:
+            print("you are allready logged in. Please log out and try again")
+            return
+        elif username == '':
+            print("please enter a valid username")
+            return
+        elif username in connected_users.keys():
+            print("a user allready has this name")
+            return
+        else:
+            return
+
+
+        self.is_logged_in = True
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     """
