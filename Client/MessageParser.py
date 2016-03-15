@@ -19,6 +19,7 @@ class MessageParser():
 
     def parse_error(self, payload):
         pass
+
     def parse_info(self, payload):
         pass
     # Include more methods for handling the different responses... 

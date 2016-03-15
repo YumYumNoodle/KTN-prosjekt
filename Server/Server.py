@@ -7,7 +7,6 @@ must be written here (e.g. a dictionary for connected clients)
 """
 
 
-
 class ClientHandler(SocketServer.BaseRequestHandler):
     """
     This is the ClientHandler class. Everytime a new client connects to the
@@ -16,12 +15,11 @@ class ClientHandler(SocketServer.BaseRequestHandler):
     logic for the server, you must write it outside this class
     """
 
-
     def handle(self):
         """
         This method handles the connection between a client and the server.
         """
-        self.possible_responses = {
+        possible_responses = {
             'login': self.login,
             'logout': self.logout,
             'msg': self.send_message,
@@ -29,26 +27,45 @@ class ClientHandler(SocketServer.BaseRequestHandler):
             'help': self.get_help
         }
 
-        self.ip = self.client_address[0]
-        self.port = self.client_address[1]
-        self.connection = self.request
+        ip = self.client_address[0]
+        port = self.client_address[1]
+        connection = self.request
 
-        print('Client connected at ' + str(self.ip) + ':' + str(self.port))
-
+        print('Client connected at ' + str(ip) + ':' + str(port))
 
         # Sends a response that the client is connected (only for test)
 
-        self.connection.send("Successfully established a connection to the server.".encode())
+        connection.send("Successfully established a connection to the server.")
 
         # Loop that listens for messages from the client
         while True:
-            received_string = self.connection.recv(4096)
-            if(received_string):
+            received_string = connection.recv(4096)
+            if received_string:
                 print received_string
             else:
-                print 'Client disconnected at ' + str(self.ip) + ':' + str(self.port)
+                print 'Client disconnected at ' + str(ip) + ':' + str(port)
                 break
             # TODO: Add handling of received payload from client
+
+    def login(self):
+        # TODO
+        pass
+
+    def logout(self):
+        # TODO
+        pass
+
+    def send_message(self):
+        # TODO
+        pass
+
+    def get_names(self):
+        # TODO
+        pass
+
+    def get_help(self):
+        # TODO
+        pass
 
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
