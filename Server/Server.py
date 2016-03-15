@@ -6,6 +6,8 @@ Variables and functions that must be used by all the ClientHandler objects
 must be written here (e.g. a dictionary for connected clients)
 """
 
+
+
 class ClientHandler(SocketServer.BaseRequestHandler):
     """
     This is the ClientHandler class. Everytime a new client connects to the
@@ -14,10 +16,19 @@ class ClientHandler(SocketServer.BaseRequestHandler):
     logic for the server, you must write it outside this class
     """
 
+
     def handle(self):
         """
         This method handles the connection between a client and the server.
         """
+        self.possible_responses = {
+            'login': self.login,
+            'logout': self.logout,
+            'msg': self.send_message,
+            'names': self.get_names,
+            'help': self.get_help
+        }
+
         self.ip = self.client_address[0]
         self.port = self.client_address[1]
         self.connection = self.request
