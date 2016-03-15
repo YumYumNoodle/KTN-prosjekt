@@ -29,7 +29,6 @@ class Client:
         # TODO: Handle disconnection
 
         self.connection.close()
-        self.print('Client disconnected')
 
     def receive_message(self, message):
         # TODO: Handle incoming message
