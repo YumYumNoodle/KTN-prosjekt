@@ -15,7 +15,9 @@ def broadcast_to_all(sender, response, message):
     for user in connected_users.values():
         user.send_response(sender, response, message)
     if response == "message":
-        history[len(history)] = {"timestamp": str(datetime.datetime.now().strftime("%H:%M:%S %d-%m-%y")), "sender": sender,"response": response, "content": message}
+        history[len(history)] = {"timestamp": str(datetime.datetime.now().strftime("%H:%M:%S %d-%m-%y")),
+                                 "sender": sender,"response": response, "content": message}
+
 
 class ClientHandler(SocketServer.BaseRequestHandler):
     """
@@ -64,7 +66,8 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                 if payload['request'] in self.possible_requests:
                     self.possible_requests[payload['request']](payload['content'])
                 else:
-                    self.send_response("Server", "error", "Invalid request. Use 'help' commmand for list of avaliable requests.")
+                    self.send_response("Server", "error", "Invalid request. Use 'help' "
+                                                          "commmand for list of avaliable requests.")
             else:
                 print 'Client disconnected at ' + str(self.ip) + ':' + str(self.port)
                 break
@@ -84,13 +87,16 @@ class ClientHandler(SocketServer.BaseRequestHandler):
             connected_users[arg] = self
             self.get_history()
             broadcast_to_all("Server", "info", arg + " logged in.")  # Broadcast to all
+            print('Client ' + str(self.ip) + ':' + str(self.port) + " logged in as: " + self.username)
 
     def logout(self, arg):
         if self.is_logged_in and self.username in connected_users:
             broadcast_to_all("Server", "info", self.username + " logged out.")
             del connected_users[self.username]
             self.is_logged_in = False
+            print('Client ' + str(self.ip) + ':' + str(self.port) + " logged out as: " + self.username)
             self.username = ""
+
         else:
             self.send_response("Server", "error", "Logout failed. You are not logged in.")
 
@@ -106,16 +112,25 @@ class ClientHandler(SocketServer.BaseRequestHandler):
             self.send_response("Server", "history", history)
 
     def get_names(self, arg):
-        # TODO: Uses send_response to provide the client with all the connected usernames
         if not self.is_logged_in:
             self.send_response("Server", "error", "Unauthorized! To login write: login [your username]")
+        else:
+            users = ""
+            for user in connected_users.keys():
+                users += user + "\n"
+
+            users = users[:-1]  # Remove the last newline
+            self.send_response("Server", "info", "Connected users:\n"+users)
 
     def get_help(self, arg):
-        # TODO: Uses send_response to provide a help text
-        pass
+        self.send_response("Server", "info", "Commands:\n\nlogin [username]\t\tLog in your user\nlogout\t\t\t\t\tLog "
+                                             "out your user\nmsg [message]\t\t\tSend a message to all connected "
+                                             "users\nnames\t\t\t\t\tGet all connected usernames\nhelp\t\t\t\t\tList of "
+                                             "avaliable commands")
 
     def send_response(self, sender, response, content):
-        payload = {"timestamp": str(datetime.datetime.now().strftime("%H:%M:%S %d-%m-%y")), "sender": sender, "response": response, "content": content}
+        payload = {"timestamp": str(datetime.datetime.now().strftime("%H:%M:%S %d-%m-%y")), "sender": sender,
+                   "response": response, "content": content}
         self.connection.send(json.dumps(payload))
 
 
