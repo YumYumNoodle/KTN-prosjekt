@@ -2,18 +2,20 @@
 import SocketServer
 import json
 import datetime
+import time
 """
 Variables and functions that must be used by all the ClientHandler objects
 must be written here (e.g. a dictionary for connected clients)
 """
 
 connected_users = {}
-history = []
+history = {}
 
 def broadcast_to_all(sender, response, message):
     for user in connected_users.values():
         user.send_response(sender, response, message)
-
+    if response == "message":
+        history[len(history)] = {"timestamp": str(datetime.datetime.now().strftime("%H:%M:%S %d-%m-%y")), "sender": sender,"response": response, "content": message}
 
 class ClientHandler(SocketServer.BaseRequestHandler):
     """
@@ -79,8 +81,8 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         else:
             self.is_logged_in = True
             self.username = arg
-            self.get_history()
             connected_users[arg] = self
+            self.get_history()
             broadcast_to_all("Server", "info", arg + " logged in.")  # Broadcast to all
 
     def logout(self, arg):
@@ -95,24 +97,25 @@ class ClientHandler(SocketServer.BaseRequestHandler):
     def msg(self, arg):
         # TODO: Uses broadcast_to_all to send a message, remember to update the history variable
         if not self.is_logged_in:
-            pass
+            self.send_response("Server", "error", "Unauthorized! To login write: login [your username]")
+        else:
+            broadcast_to_all(self.username, "message", arg)
 
     def get_history(self):
-        # TODO: Goes through the history list and uses send_response to update the clients chat
-        if not self.is_logged_in:
-            pass
+        if len(history) > 0:
+            self.send_response("Server", "history", history)
 
     def get_names(self, arg):
         # TODO: Uses send_response to provide the client with all the connected usernames
         if not self.is_logged_in:
-            pass
+            self.send_response("Server", "error", "Unauthorized! To login write: login [your username]")
 
     def get_help(self, arg):
         # TODO: Uses send_response to provide a help text
         pass
 
     def send_response(self, sender, response, content):
-        payload = {"timestamp": str(datetime.datetime.now()), "sender": sender, "response": response, "content": content}
+        payload = {"timestamp": str(datetime.datetime.now().strftime("%H:%M:%S %d-%m-%y")), "sender": sender, "response": response, "content": content}
         self.connection.send(json.dumps(payload))
 
 

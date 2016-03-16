@@ -19,8 +19,14 @@ class Client:
         self.server_port = server_port
         # Set up the socket connection to the server
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        
-        self.run()
+
+        # Set up messageparser
+        self.message_parser = MessageParser()
+
+        try:
+            self.run()
+        except KeyboardInterrupt:  # Disconnect on keyboard interupt
+            self.disconnect()
 
     def run(self):
         # Initiate the connection to the server
@@ -44,12 +50,16 @@ class Client:
         self.disconnect()
 
     def disconnect(self):
+        print "Closing connection..."
+        # Make sure the user is logged out
+        payload = {"request": "logout", "content": ""}
+        self.send_payload(json.dumps(payload))
+        time.sleep(1)  # Wait for the logout payload to be sent
         self.connection.close()
+        print "Connection terminated."
 
     def receive_message(self, payload):
-        # TODO: The code under is purely testing, and should be done in the message-parser class
-        message = json.loads(payload)
-        print("[" + message["sender"] + " at " + message["timestamp"] + "] " + message["content"])
+        print self.message_parser.parse(payload)
 
     def send_payload(self, data):
         self.connection.send(data)

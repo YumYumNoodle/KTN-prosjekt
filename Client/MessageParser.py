@@ -1,6 +1,7 @@
-
 import json
-class MessageParser():
+
+
+class MessageParser:
     # TODO: Finish this class
     def __init__(self):
 
@@ -13,43 +14,31 @@ class MessageParser():
 
     def parse(self, payload):
 
-
-        payload = json.loads(payload)# decode the JSON object
+        payload = json.loads(payload)  # decode the JSON object
         if payload['response'] in self.possible_responses:
-            print (self.possible_responses[payload['response']](payload))
+            return self.possible_responses[payload['response']](payload)
         else:
-            return("Error in JSONobject recieved from server")
+            return "Error in JSONobject recieved from server"
 
     def parse_error(self, payload):
-        return "error: " + payload['content']
+        return "["+payload["sender"]+" @ " + payload["timestamp"] + "] Error: " + payload["content"]
+
     def parse_info(self, payload):
-        return "info: " + payload['content']
+        return "["+payload["sender"]+" @ " + payload["timestamp"] + "] " + payload["content"]
 
     def parse_message(self, payload):
-        username = "unknown"
-        try:
-            username = payload["sender"]
-        finally:
-            return username+ ": "  + payload['content']
+        return "["+payload["sender"]+" @ " + payload["timestamp"] + "] " + payload["content"]
 
     def parse_history(self, payload):
         history_message = ""
         history_dict = payload['content']
 
+        for i in range(0, len(history_dict)):
+            response = history_dict[str(i)]
+            history_message += "["+response["sender"]+" @ " + response["timestamp"] + "] " + response["content"]+"\n"
 
-        for i in range(1, len(history_dict)+1):
-            dict = history_dict[unicode(i)]
-            history_message+= dict[unicode('sender')]+": " + dict[unicode('content')]  + "\n"
+        history_message = history_message[:-1]  # Remove last newline
         return history_message
-def test():
-    m = MessageParser()
-
-    #data = {'timestamp': "10:20", 'response': 'message', 'sender': 'hege', 'content': 'hei'}
-    data = {'timestamp': "10:20", 'response': 'history', 'sender': 'hege', 'content': {1: {'timestamp': "10:20", 'response': 'message', 'sender': 'hege', 'content': 'hei'}, 2:{'timestamp': "10:20", 'response': 'message', 'sender': 'max', 'content': 'hei'}, 3: {'timestamp': "10:20", 'response': 'message', 'sender': 'nora', 'content': 'hei'}}}
-    payload = json.dumps(data) #json object
-    m.parse(payload)
-    #json_decode = json.loads(json_encoded) #python dict
 
 
-test()
 
