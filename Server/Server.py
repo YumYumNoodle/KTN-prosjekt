@@ -9,14 +9,14 @@ must be written here (e.g. a dictionary for connected clients)
 """
 
 connected_users = {}
-history = {}
+history = []
 
 def broadcast_to_all(sender, response, message):
     for user in connected_users.values():
         user.send_response(sender, response, message)
     if response == "message":
-        history[len(history)] = {"timestamp": str(datetime.datetime.now().strftime("%H:%M:%S %d-%m-%y")),
-                                 "sender": sender,"response": response, "content": message}
+        history.append(json.dumps({"timestamp": str(datetime.datetime.now().strftime("%H:%M:%S %d-%m-%y")),
+                                 "sender": sender,"response": response, "content": message}))
 
 
 class ClientHandler(SocketServer.BaseRequestHandler):
@@ -151,7 +151,7 @@ if __name__ == "__main__":
     No alterations are necessary
     """
 
-    HOST, PORT = 'localhost', 9998
+    HOST, PORT = '78.91.9.1', 9998
 
     # Allow restart of the server
     ThreadedTCPServer.allow_reuse_address = True

@@ -31,11 +31,11 @@ class MessageParser:
 
     def parse_history(self, payload):
         history_message = ""
-        history_dict = payload['content']
 
-        for i in range(0, len(history_dict)):
-            response = history_dict[str(i)]
-            history_message += "["+response["sender"]+" @ " + response["timestamp"] + "] " + response["content"]+"\n"
+        for json_msg in payload["content"]:
+            decoded_json = json.loads(json_msg)
+            history_message += "["+decoded_json["sender"]+" @ " + decoded_json["timestamp"] + "] " + \
+                               decoded_json["content"] + "\n"
 
         history_message = history_message[:-1]  # Remove last newline
         return history_message
